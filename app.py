@@ -20,6 +20,34 @@ if 'theme' not in st.session_state:
 
 def nav_to(page_name):
     st.session_state.current_page = page_name
+    st.session_state.close_sidebar_flag = True
+
+def toggle_theme():
+    st.session_state.theme = "light" if st.session_state.theme == "dark" else "dark"
+    # Optional: also close sidebar when toggling theme from mobile sidebar
+    st.session_state.close_sidebar_flag = True
+
+# ---------------- SIDEBAR CLOSE LOGIC (MUST RUN ON EVERY RERUN IF FLAGGED) ---------------- #
+if st.session_state.get("close_sidebar_flag", False):
+    js = """
+    <script>
+        function collapseSidebar() {
+            try {
+                const doc = window.parent ? window.parent.document : window.document;
+                doc.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', code: 'Escape', keyCode: 27, which: 27, bubbles: true}));
+            } catch (e) {
+                console.log(e);
+            }
+        }
+
+        // Trigger immediately and a few times shortly after
+        collapseSidebar();
+        setTimeout(collapseSidebar, 100);
+        setTimeout(collapseSidebar, 300);
+    </script>
+    """
+    st.markdown(js, unsafe_allow_html=True)
+    st.session_state.close_sidebar_flag = False
 
 def toggle_theme():
     st.session_state.theme = "light" if st.session_state.theme == "dark" else "dark"
@@ -85,7 +113,37 @@ st.markdown(
     }}
 
     [data-testid="stHeader"] {{ display: none !important; }}
-    section[data-testid="stSidebar"] {{ display: none !important; }}
+    
+    /* Responsive Sidebar & Navbar Visibility */
+    @media (min-width: 992px) {{
+        /* DESKTOP: Hide Sidebar and Header (Hamburger) */
+        section[data-testid="stSidebar"] {{ display: none !important; }}
+        [data-testid="stHeader"] {{ display: none !important; }}
+    }}
+    
+    @media (max-width: 991px) {{
+        /* MOBILE: Show Header (Hamburger) for Sidebar Access */
+        [data-testid="stHeader"] {{ 
+            display: block !important; 
+            background: transparent !important;
+        }}
+        
+        /* Style the Mobile Sidebar */
+        section[data-testid="stSidebar"] {{ 
+            background-color: var(--nav-bg) !important;
+            border-right: 1px solid var(--card-border);
+        }}
+        
+        /* Hide Desktop Navbar */
+        /* Target horizontal blocks that contain buttons (The Navbar) */
+        [data-testid="stHorizontalBlock"]:has(.stButton) {{
+            display: none !important;
+        }}
+        
+        /* Mobile Tweaks */
+        .app-title {{ font-size: 3rem !important; }}
+        .main .block-container {{ padding-top: 3rem !important; }}
+    }}
     
     /* Strict Layout Fix */
     .main .block-container {{ 
@@ -367,6 +425,38 @@ st.markdown('<div class="animate-reveal">', unsafe_allow_html=True)
 st.markdown('<div class="app-title">CardioSentinel</div>', unsafe_allow_html=True)
 st.markdown('<div class="app-subtitle-premium">Simple Heart Health Prediction for Everyone</div>', unsafe_allow_html=True)
 
+# ---------------- NAVIGATION ---------------- #
+
+# 1. SIDEBAR CONTENT (Visible on Mobile via CSS)
+with st.sidebar:
+    st.markdown(f'<div style="text-align:center; padding: 1rem 0 2rem 0;"><h2 style="color:{t["accent_vibrant"]}; font-family:\'Outfit\'; margin:0; letter-spacing: 0.2em;">MENU</h2></div>', unsafe_allow_html=True)
+    
+    if st.button("DASHBOARD", key="mob_dash", use_container_width=True, type="primary" if st.session_state.current_page == "DASHBOARD" else "secondary"):
+        nav_to("DASHBOARD")
+        st.rerun()
+
+    if st.button("ASSESSMENT", key="mob_assessment", use_container_width=True, type="primary" if st.session_state.current_page == "PREDICTION" else "secondary"):
+        nav_to("PREDICTION")
+        st.rerun()
+
+    if st.button("ANALYTICS", key="mob_analytics", use_container_width=True, type="primary" if st.session_state.current_page == "ANALYSIS" else "secondary"):
+        nav_to("ANALYSIS")
+        st.rerun()
+
+    if st.button("GUIDELINES", key="mob_guidelines", use_container_width=True, type="primary" if st.session_state.current_page == "GUIDELINES" else "secondary"):
+        nav_to("GUIDELINES")
+        st.rerun()
+
+    if st.button("PROTOCOL", key="mob_about", use_container_width=True, type="primary" if st.session_state.current_page == "ABOUT" else "secondary"):
+        nav_to("ABOUT")
+        st.rerun()
+    
+    st.markdown("---")
+    if st.button(f"THEME: {st.session_state.theme.upper()}", key="mob_theme", use_container_width=True):
+        toggle_theme()
+        st.rerun()
+
+# 2. DESKTOP NAVBAR
 # ---------------- HYPER-NAVBAR ---------------- #
 # This columns block is targeted by CSS to be the sticky bar
 # Expanding the last col slightly to accommodate text
