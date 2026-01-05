@@ -15,6 +15,9 @@ CardioSentinel is a smart, user-friendly tool designed to assess heart health ri
     - Real-time biometric scanning.
     - Visual analytics of risk factors.
     - "Dark/Light" Theme Toggle for accessibility.
+- **Fully Responsive Design**:
+    - **Mobile-First Experience**: Optimized for smartphones and tablets with a dedicated drawer navigation.
+    - **Premium UI**: Glassmorphism aesthetics that adapt seamlessly to any screen size.
 - **User-Friendly Interface**:
     - Simplified English language for easy understanding.
     - Clear "High Risk" / "Low Risk" feedback with visual alerts.
