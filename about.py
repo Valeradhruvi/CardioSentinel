@@ -2,6 +2,32 @@ import streamlit as st
 
 def show_about():
     st.markdown('<div class="app-title">About</div>', unsafe_allow_html=True)
+    st.markdown(
+    """
+    <div style="
+        text-align:center;
+        margin-bottom:30px;
+        font-family: 'Poppins', 'Segoe UI', sans-serif;
+        letter-spacing: 0.6px;
+    ">
+        <span style="
+            font-size:0.9rem;
+            color:var(--sub-text);
+        ">Developed by</span><br>
+        <span style="
+            font-size:1.4rem;
+            font-weight:800;
+            background: linear-gradient(90deg, var(--accent), var(--accent-vibrant));
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+        ">
+            Dhruvi Valera
+        </span>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
     st.markdown('<div class="app-subtitle-premium">How It Works</div>', unsafe_allow_html=True)
 
     st.markdown(
