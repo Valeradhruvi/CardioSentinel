@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import numpy as np
 import pandas as pd
@@ -506,6 +507,7 @@ with nav_cols[5]:
 # ---------------- MODEL LOADING ---------------- #
 @st.cache_resource
 def load_model():
+    # Load dataset
     df = pd.read_csv("Data/preprocessed_data.csv")
 
     FEATURE_COLUMNS = df.drop("cardio", axis=1).columns.tolist()
@@ -514,15 +516,18 @@ def load_model():
     X = df[FEATURE_COLUMNS].values
     y = df["cardio"].values
 
+    # Train model
     model = LogisticRegression(max_iter=1000)
     model.fit(X, y)
 
-    scaler = joblib.load("scaler.pkl")
+    # Load scaler (MAKE SURE FILE EXISTS)
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    scaler_path = os.path.join(current_dir, "scaler.pkl")
+    scaler = joblib.load(scaler_path)
 
     return model, FEATURE_COLUMNS, SCALE_COLS, scaler
 
 model, FEATURE_COLUMNS, SCALE_COLS, scaler = load_model()
-
 # ======================================================
 # 📊 DASHBOARD PAGE
 # ======================================================
